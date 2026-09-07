@@ -86,7 +86,7 @@ module system_tb;
   // ----------------------------------------
 
   assign                switch        = '0;
-  assign                button        = '1;
+  assign                button        = '0;
   assign                srst_n        = '1;
   assign                trst_n        = '1;
   assign                tdi           = '0;

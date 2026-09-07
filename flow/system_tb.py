@@ -30,6 +30,7 @@ class SystemTb(Block):
             sim = questasim.simulate
             wave_do = [
                 self.design_dir / f"wave/{self.name}.do",
+                self.design_dir / "wave/riscv.radix.do"
             ]
         elif simulator == 'xsim':
             sim = xsim.simulate
