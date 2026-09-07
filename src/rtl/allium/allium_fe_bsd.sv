@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SHL-2.1
 // SPDX-FileCopyrightText: David Schröder 2026
 
-module allium_block_stream_decoder
+module allium_fe_bsd
 	import allium_pkg::*;
 #(
 	parameter logic [31:0] BOOT_ADDR = 32'h00000080
