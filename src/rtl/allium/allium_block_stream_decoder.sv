@@ -104,7 +104,9 @@ module allium_block_stream_decoder
 	end
 
 	always_ff @(posedge clk_i) begin
-		insn <= imem[pc_d[31:2]];
+		if (!valid_o || ready_i) begin
+			insn <= imem[pc_d[31:2]];
+		end
 	end
 
 
