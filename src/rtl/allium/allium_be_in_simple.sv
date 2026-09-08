@@ -73,20 +73,28 @@ module allium_be_in_simple
     logic [31:0] ldst_data_q;
     logic        ldst_valid_q;
 
+    logic [ 5:0] regsrc_q [31:0];
+
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (~rst_ni) begin
             alu_data_q   <= '0;
             alu_valid_q  <= '0;
             ldst_data_q  <= '0;
             ldst_valid_q <= '0;
+            for (int i = 0; i < 32; i++) begin
+                regsrc_q[i] <= '0;
+            end
         end else begin
             alu_data_q   <= alu_data_i;
             alu_valid_q  <= alu_valid_i;
             ldst_data_q  <= ldst_data_i;
-            ldst_valid_q <= ldst_data_i;
+            ldst_valid_q <= ldst_valid_i;
             if (cfg_update_i) begin
                 alu_valid_q  <= '0;
                 ldst_valid_q <= '0;
+                for (int i = 0; i < 32; i++) begin
+                    regsrc_q[i] <= regsrc_i[i];
+                end
             end
         end
     end
@@ -110,8 +118,8 @@ module allium_be_in_simple
         regs_valid[0] = '1;
         regs_o    [0] = '0;
         for (int i = 1; i < 32; i++) begin
-            regs_o    [i] = data_srcs_reg [regsrc_i[i]];
-            regs_valid[i] = valid_srcs_reg[regsrc_i[i]];
+            regs_o    [i] = data_srcs_reg [regsrc_q[i]];
+            regs_valid[i] = valid_srcs_reg[regsrc_q[i]];
         end
     end
 
