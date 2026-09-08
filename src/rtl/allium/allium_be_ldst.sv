@@ -20,6 +20,7 @@ module allium_be_ldst
 	input  logic        b_valid_i,
 	input  logic [31:0] b_data_i, // store data
 
+	output logic        is_store_o,
 	output logic        valid_o,
 	output logic [31:0] data_o // load data
 );
@@ -43,6 +44,7 @@ module allium_be_ldst
 	end
 
 	assign is_store_op = op_q inside {SB, SH, SW};
+	assign is_store_o  = is_store_op;
 
 	/* LD/ST logic */
 
@@ -98,7 +100,7 @@ module allium_be_ldst
 			valid_o <= '0;
 		end else begin
 			ea_q <= ea_d;
-			valid_o <= inputs_valid;
+			valid_o <= inputs_valid && !cfg_update_i;
 		end
 	end
 
