@@ -20,7 +20,7 @@ module allium_be_alu
 );
 
 	alu_op_e op_q;
-	logic lt, ltu, eq;
+	logic lt, ltu;
 
 	always_ff @(posedge clk_i or negedge rst_ni) begin
 		if (~rst_ni) begin
