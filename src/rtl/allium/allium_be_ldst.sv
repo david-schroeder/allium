@@ -57,7 +57,7 @@ module allium_be_ldst
 	logic [31:0] wdata_full;
 	logic [ 3:0] wmask;
 
-	assign ea_d = a_data_i + offs_q;
+	assign ea_d = a_data_i + {{20{offs_q[11]}}, offs_q};
 	// load operations only need A input
 	assign inputs_valid = a_valid_i && (b_valid_i || !is_store_op);
 	assign rdata_half = ea_q[1] ? rdata_full[31:16] : rdata_full[15:0];

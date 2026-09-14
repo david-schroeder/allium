@@ -74,4 +74,20 @@ package allium_pkg;
     localparam logic [5:0] ALU_SRC = 6'd33;
     localparam logic [5:0] LDST_SRC = 6'd34;
 
+    typedef struct packed {
+        // FU CFG
+        logic [31:0]       imm_data;
+        alu_op_e           alu_op;
+        mem_op_e           ldst_op;
+        logic [11:0]       ldst_offs;
+        branch_e           branch;
+        logic [ 5:0]       alu_srca;
+        logic [ 5:0]       alu_srcb;
+        logic [ 5:0]       ldst_srca;
+        logic [ 5:0]       ldst_srcb;
+        logic [ 5:0]       brh_srca;
+        logic [ 5:0]       brh_srcb;
+        logic [ 5:0][31:0] reg_srcs;
+    } cgra_cfg_t;
+
 endpackage
