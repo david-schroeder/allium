@@ -3,8 +3,24 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
+
+volatile static uint32_t values[10];
 
 int main(void) {
-    printf("Hello!\n");
+    // Fibonacci
+    uint32_t a = 0;
+    uint32_t b = 1;
+    uint32_t c;
+
+    volatile uint32_t *ptr = &values[0];
+
+    for (int i = 0; i < 10; i++) {
+        *ptr++ = a;
+        c = a + b;
+        a = b;
+        b = c;
+    }
+
     return 0;
 }

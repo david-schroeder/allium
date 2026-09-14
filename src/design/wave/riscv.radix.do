@@ -582,6 +582,28 @@ radix define riscv_csrs {
 }
 quietly WaveActivateNextPane {} 0
 add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/BOOT_ADDR
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/branch_backwards
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/branch_offset
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/clk_i
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/first_cycle_q
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/imem
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/insn
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/is_branch
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/is_jal
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/is_jalr
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/jal_offset
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/jump_i
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/pc_d
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/pc_i
+add wave -noupdate -radix riscv_instr /system_tb/board_i/DUT/core_i/bsd_dut/insn_o
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/pc_o
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/pc_q
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/ready_i
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/rst_ni
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/valid_d
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/valid_o
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/valid_q
+add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/BOOT_ADDR
 add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/clk_i
 add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/rst_ni
 add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/first_cycle_q
@@ -606,7 +628,7 @@ add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/valid_o
 add wave -noupdate -radix riscv_instr /system_tb/board_i/DUT/core_i/bsd_dut/insn_o
 add wave -noupdate /system_tb/board_i/DUT/core_i/bsd_dut/pc_o
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {564953071 fs} 0}
+WaveRestoreCursors {{Cursor 1} {2985465504979 fs} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 324
 configure wave -valuecolwidth 70
@@ -622,4 +644,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits fs
 update
-WaveRestoreZoom {545981367 fs} {548480633 fs}
+WaveRestoreZoom {0 fs} {99923514 fs}

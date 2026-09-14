@@ -4,7 +4,8 @@
 module allium_fe_bsd
 	import allium_pkg::*;
 #(
-	parameter logic [31:0] BOOT_ADDR = 32'h00000080
+	parameter logic [31:0] BOOT_ADDR = 32'h00000080,
+	parameter int          PRED_BTFNT = 0
 ) (
 	input  logic clk_i,
 	input  logic rst_ni,
@@ -28,11 +29,10 @@ module allium_fe_bsd
 		- Start fetching instructions sequentially from `BOOT_ADDR`
 		  after reset
 		- Follow direct, unconditional jumps in the program stream
-		  (without! producing a jump output instruction)
 		- Yield fetched instructions on the output port (unless
 		  explicitly suppressed)
-		- Predict branches by BTFNT scheme; their instructions are
-		  always yielded
+		- (optionally) Predict branches by BTFNT scheme; their
+		  instructions are always yielded
 		- Immediately interrupt any ongoing fetch operations if
 		  `jump_i` is asserted, in which case it starts fetching
 		  from the instruction at address `pc_i`
@@ -77,7 +77,7 @@ module allium_fe_bsd
 			first_cycle_q: pc_d = BOOT_ADDR;
 			jump_i: pc_d = pc_i;
 			is_jal: pc_d = pc_q + jal_offset;
-			is_branch && branch_backwards: pc_d = pc_q + branch_offset;
+			is_branch && branch_backwards && PRED_BTFNT: pc_d = pc_q + branch_offset;
 			valid_q: pc_d = pc_q + 4;
 			default: pc_d = pc_q;
 		endcase
@@ -112,7 +112,7 @@ module allium_fe_bsd
 
 	assign insn_o = insn;
 	assign pc_o = pc_q;
-	assign valid_o = valid_q && !is_jal; // jumps are not yielded
+	assign valid_o = valid_q;
 
 	`define STRINGIFY(x) `"x`"
 	initial begin
