@@ -209,33 +209,33 @@ module allium_be_in_simple
 
     always_comb begin
         sources_reg = '{
-            {1'b1        , 32'b0      },
-            {ldst_valid_i, ldst_data_i},
-            {1'b1        , move0_data },
-            {1'b1        , move1_data },
-            {imm0_valid_i, imm0_data_i},
-            {imm1_valid_i, imm1_data_i},
-            {alu0_valid_i, alu0_data_i},
-            {alu1_valid_i, alu1_data_i}
+            0: {1'b1        , 32'b0      },
+            1: {ldst_valid_i, ldst_data_i},
+            2: {1'b1        , move0_data },
+            3: {1'b1        , move1_data },
+            4: {imm0_valid_i, imm0_data_i},
+            5: {imm1_valid_i, imm1_data_i},
+            6: {alu0_valid_i, alu0_data_i},
+            7: {alu1_valid_i, alu1_data_i}
         };
 
         sources_fu = '{
-            {1'b1        , 32'b0         },
-            {ldst_valid_q, ldst_data_q   },
-            {1'b1        , 32'b0         },
-            {1'b1        , 32'b0         },
-            {imm0_valid_i, imm0_data_i   },
-            {imm1_valid_i, imm1_data_i   },
-            {alu0_valid_q, alu0_data_q   },
-            {alu1_valid_q, alu1_data_q   },
-            {1'b1        , presel_data[0]},
-            {1'b1        , presel_data[1]},
-            {1'b1        , presel_data[2]},
-            {1'b1        , presel_data[3]},
-            {1'b1        , 32'b0         },
-            {1'b1        , 32'b0         },
-            {1'b1        , 32'b0         },
-            {1'b1        , 32'b0         }
+            0:  {1'b1        , 32'b0         },
+            1:  {ldst_valid_q, ldst_data_q   },
+            2:  {1'b1        , 32'b0         },
+            3:  {1'b1        , 32'b0         },
+            4:  {imm0_valid_i, imm0_data_i   },
+            5:  {imm1_valid_i, imm1_data_i   },
+            6:  {alu0_valid_q, alu0_data_q   },
+            7:  {alu1_valid_q, alu1_data_q   },
+            8:  {1'b1        , presel_data[0]},
+            9:  {1'b1        , presel_data[1]},
+            10: {1'b1        , presel_data[2]},
+            11: {1'b1        , presel_data[3]},
+            12: {1'b1        , 32'b0         },
+            13: {1'b1        , 32'b0         },
+            14: {1'b1        , 32'b0         },
+            15: {1'b1        , 32'b0         }
         };
 
         {alu0_a_valid_o, alu0_a_data_o} = sources_fu[cfg_alu0_srca_q];
