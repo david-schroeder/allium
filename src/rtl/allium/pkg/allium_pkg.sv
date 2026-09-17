@@ -75,6 +75,11 @@ package allium_pkg;
     localparam logic [5:0] LDST_SRC = 6'd34;
 
     typedef struct packed {
+        logic [2:0] src;
+        logic [5:0] dest;
+    } postselect_t;
+
+    typedef struct packed {
         // FU CFG
         logic [31:0]       imm_data;
         alu_op_e           alu_op;
