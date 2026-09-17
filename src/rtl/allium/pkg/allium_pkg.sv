@@ -36,6 +36,40 @@ package allium_pkg;
         BGEU
     } branch_e;
 
+    //////////////////////////////////
+    //                              //
+    // High-level CPU configuration //
+    //                              //
+    //////////////////////////////////
+
+    // Adjustable parameters
+    localparam int N_PRESELS    = 4;
+    localparam int N_POSTSELS   = 2;
+    localparam int N_IMMS       = 2;
+    localparam int N_ALUS       = 2;
+    localparam int N_MOVS       = 2;
+
+    // Not adjustable yet
+    localparam int N_LDSTS      = 1;
+    localparam int N_BRANCHES   = 1;
+    localparam int N_COMMITSETS = 1;
+
+    // Computed parameters
+    localparam int N_DATA_FUS   = N_IMMS + N_ALUS + N_LDSTS; // No branches
+    localparam int N_FUSRCS     = N_DATA_FUS + N_PRESELS + 1; // +1 for ZERO
+    localparam int N_REGSRCS    = N_DATA_FUS + N_MOVS + 1;
+
+    localparam int LG_PRESELS   = $clog2(N_PRESELS);
+    localparam int LG_POSTSELS  = $clog2(N_POSTSELS);
+    localparam int LG_FUSRCS    = $clog2(N_FUSRCS);
+    localparam int LG_REGSRCS   = $clog2(N_REGSRCS);
+
+    /////////////////////////
+    //                     //
+    // Defines + utilities //
+    //                     //
+    /////////////////////////
+
     localparam logic [1:0] MOV_PRE0 = 2'd0;
     localparam logic [1:0] MOV_PRE1 = 2'd1;
     localparam logic [1:0] MOV_PRE2 = 2'd2;
@@ -95,24 +129,29 @@ package allium_pkg;
     localparam logic [4:0] R_T6   = 5'd31;
 
     typedef struct packed {
-        logic [2:0] src;
-        logic [4:0] dest;
+        logic [LG_REGSRCS-1:0] src;
+        logic [           4:0] dest;
     } postselect_t;
 
     typedef struct packed {
         // FU CFG
-        logic [31:0]       imm_data;
-        alu_op_e           alu_op;
-        mem_op_e           ldst_op;
-        logic [11:0]       ldst_offs;
-        branch_e           branch;
-        logic [ 5:0]       alu_srca;
-        logic [ 5:0]       alu_srcb;
-        logic [ 5:0]       ldst_srca;
-        logic [ 5:0]       ldst_srcb;
-        logic [ 5:0]       brh_srca;
-        logic [ 5:0]       brh_srcb;
-        logic [ 5:0][31:0] reg_srcs;
+        logic           [31:0][    N_IMMS-1:0]  imm_data;
+        alu_op_e              [    N_ALUS-1:0]  alu0_op;
+        mem_op_e              [   N_LDSTS-1:0] ldst_op;
+        logic           [11:0][   N_LDSTS-1:0] ldst_offs;
+        branch_e              [N_BRANCHES-1:0] branch;
+        // Routing CFG
+        logic [LG_PRESELS-1:0][    N_MOVS-1:0] move0_src;
+        logic [ LG_FUSRCS-1:0][    N_ALUS-1:0] alu_srca;
+        logic [ LG_FUSRCS-1:0][    N_ALUS-1:0] alu_srcb;
+        logic [ LG_FUSRCS-1:0][   N_LDSTS-1:0] ldst_srca;
+        logic [ LG_FUSRCS-1:0][   N_LDSTS-1:0] ldst_srcb;
+        logic [ LG_FUSRCS-1:0][N_BRANCHES-1:0] brh_srca;
+        logic [ LG_FUSRCS-1:0][N_BRANCHES-1:0] brh_srcb;
+        logic [           4:0][ N_PRESELS-1:0] presels;
+        postselect_t          [N_POSTSELS-1:0] postsels;
     } cgra_cfg_t;
+
+    localparam int CONFIG_BITS = $bits(cgra_cfg_t);
 
 endpackage
