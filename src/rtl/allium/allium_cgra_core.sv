@@ -117,6 +117,8 @@ module allium_cgra_core
                 .rst_ni,
                 .cfg_update_i,
                 .cfg_op_i    (config_i.alu_op[i]),
+                .cfg_is_imm_i(config_i.alu_is_imm[i]),
+                .cfg_imm_i   (config_i.alu_imm[i]),
                 .a_valid_i   (alu_a_valid[i]),
                 .a_data_i    (alu_a_data[i]),
                 .b_valid_i   (alu_b_valid[i]),

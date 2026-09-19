@@ -147,6 +147,8 @@ package allium_pkg;
         // FU CFG
         logic           [    N_IMMS-1:0][31:0] imm_data;
         alu_op_e        [    N_ALUS-1:0]       alu_op;
+        logic           [    N_ALUS-1:0]       alu_is_imm;
+        logic           [    N_ALUS-1:0][11:0] alu_imm;
         mem_op_e        [   N_LDSTS-1:0]       ldst_op;
         logic           [   N_LDSTS-1:0][11:0] ldst_offs;
         branch_e        [N_BRANCHES-1:0]       branch;
