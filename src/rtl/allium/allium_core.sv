@@ -12,7 +12,7 @@ module allium_core (
     logic [31:0] insn;
     logic        valid;
 
-    allium_fe_bsd bsd_dut (
+    allium_bsd bsd_dut (
         .clk_i,
         .rst_ni,
 

@@ -5,7 +5,7 @@
 // TODO: handle misaligned accesses
 //       (they are UB today)
 
-module allium_be_ldst
+module allium_fu_ldst
 	import allium_pkg::*;
 (
 	input  logic clk_i,

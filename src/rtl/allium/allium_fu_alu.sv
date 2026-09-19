@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SHL-2.1
 // SPDX-FileCopyrightText: David Schröder 2026
 
-module allium_be_alu
+module allium_fu_alu
 	import allium_pkg::*;
 (
 	input  logic clk_i,

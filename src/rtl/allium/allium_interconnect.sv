@@ -4,7 +4,7 @@
 // Interconnection network for simple Allium
 // backend layout
 
-module allium_be_in_simple
+module allium_interconnect
     import allium_pkg::*;
 (
     input  logic clk_i,

@@ -57,7 +57,7 @@ module allium_cgra_core
     //              //
     //////////////////
 
-    allium_be_in_simple interconnect_i (
+    allium_interconnect interconnect_i (
         .clk_i,
         .rst_ni,
 
@@ -101,7 +101,7 @@ module allium_cgra_core
     generate
 
         for (genvar i = 0; i < N_IMMS; i++) begin : gen_imms
-            allium_be_imm fu_imm_i (
+            allium_fu_imm fu_imm_i (
                 .clk_i,
                 .rst_ni,
                 .cfg_update_i,
@@ -112,7 +112,7 @@ module allium_cgra_core
         end : gen_imms
 
         for (genvar i = 0; i < N_ALUS; i++) begin : gen_alus
-            allium_be_alu fu_alu_i (
+            allium_fu_alu fu_alu_i (
                 .clk_i,
                 .rst_ni,
                 .cfg_update_i,
@@ -127,7 +127,7 @@ module allium_cgra_core
         end : gen_alus
 
         for (genvar i = 0; i < N_LDSTS; i++) begin : gen_ldsts
-            allium_be_ldst fu_ldst_i (
+            allium_fu_ldst fu_ldst_i (
                 .clk_i,
                 .rst_ni,
                 .cfg_update_i,
@@ -149,7 +149,7 @@ module allium_cgra_core
     // when multiple branch/commit set support is added
     // for now just hardcode one unit
 
-    allium_be_branch fu_branch_i (
+    allium_fu_branch fu_branch_i (
         .clk_i,
         .rst_ni,
         .cfg_update_i,
