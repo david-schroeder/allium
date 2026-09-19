@@ -64,6 +64,16 @@ package allium_pkg;
     localparam int LG_FUSRCS    = $clog2(N_FUSRCS);
     localparam int LG_REGSRCS   = $clog2(N_REGSRCS);
 
+    // Computed address layout
+    localparam int SRC_ZERO        = '0;
+    localparam int SRC_IMM_BASE    = SRC_ZERO + 1;
+    localparam int SRC_ALU_BASE    = SRC_IMM_BASE + N_IMMS;
+    localparam int SRC_LDST_BASE   = SRC_ALU_BASE + N_ALUS;
+    // move and presel map to the same address region
+    // (moves are for regs only, presels for FUs only)
+    localparam int SRC_MOVE_BASE   = SRC_LDST_BASE + N_LDSTS;
+    localparam int SRC_PRESEL_BASE = SRC_LDST_BASE + N_LDSTS;
+
     /////////////////////////
     //                     //
     // Defines + utilities //
@@ -135,20 +145,20 @@ package allium_pkg;
 
     typedef struct packed {
         // FU CFG
-        logic           [31:0][    N_IMMS-1:0]  imm_data;
-        alu_op_e              [    N_ALUS-1:0]  alu0_op;
-        mem_op_e              [   N_LDSTS-1:0] ldst_op;
-        logic           [11:0][   N_LDSTS-1:0] ldst_offs;
-        branch_e              [N_BRANCHES-1:0] branch;
+        logic           [    N_IMMS-1:0][31:0] imm_data;
+        alu_op_e        [    N_ALUS-1:0]       alu_op;
+        mem_op_e        [   N_LDSTS-1:0]       ldst_op;
+        logic           [   N_LDSTS-1:0][11:0] ldst_offs;
+        branch_e        [N_BRANCHES-1:0]       branch;
         // Routing CFG
-        logic [LG_PRESELS-1:0][    N_MOVS-1:0] move0_src;
-        logic [ LG_FUSRCS-1:0][    N_ALUS-1:0] alu_srca;
-        logic [ LG_FUSRCS-1:0][    N_ALUS-1:0] alu_srcb;
-        logic [ LG_FUSRCS-1:0][   N_LDSTS-1:0] ldst_srca;
-        logic [ LG_FUSRCS-1:0][   N_LDSTS-1:0] ldst_srcb;
-        logic [ LG_FUSRCS-1:0][N_BRANCHES-1:0] brh_srca;
-        logic [ LG_FUSRCS-1:0][N_BRANCHES-1:0] brh_srcb;
-        logic [           4:0][ N_PRESELS-1:0] presels;
+        logic [    N_MOVS-1:0][LG_PRESELS-1:0] move_src;
+        logic [    N_ALUS-1:0][ LG_FUSRCS-1:0] alu_srca;
+        logic [    N_ALUS-1:0][ LG_FUSRCS-1:0] alu_srcb;
+        logic [   N_LDSTS-1:0][ LG_FUSRCS-1:0] ldst_srca;
+        logic [   N_LDSTS-1:0][ LG_FUSRCS-1:0] ldst_srcb;
+        logic [N_BRANCHES-1:0][ LG_FUSRCS-1:0] brh_srca;
+        logic [N_BRANCHES-1:0][ LG_FUSRCS-1:0] brh_srcb;
+        logic [ N_PRESELS-1:0][           4:0] presels;
         postselect_t          [N_POSTSELS-1:0] postsels;
     } cgra_cfg_t;
 
