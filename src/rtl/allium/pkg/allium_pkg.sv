@@ -56,11 +56,18 @@ package allium_pkg;
 
     // Computed parameters
     localparam int N_DATA_FUS   = N_IMMS + N_ALUS + N_LDSTS; // No branches
+    // Since N_MOVS can never (sensibly) be greater than N_PRESELS,
+    // we can assume that N_FUSRCS >= N_REGSRCS.
     localparam int N_FUSRCS     = N_DATA_FUS + N_PRESELS + 1; // +1 for ZERO
     localparam int N_REGSRCS    = N_DATA_FUS + N_MOVS + 1;
 
     localparam int LG_PRESELS   = $clog2(N_PRESELS);
     localparam int LG_POSTSELS  = $clog2(N_POSTSELS);
+    localparam int LG_IMMS      = $clog2(N_IMMS);
+    localparam int LG_ALUS      = $clog2(N_ALUS);
+    localparam int LG_MOVS      = $clog2(N_MOVS);
+    localparam int LG_LDSTS     = $clog2(N_LDSTS);
+    localparam int LG_BRANCHES  = $clog2(N_BRANCHES);
     localparam int LG_FUSRCS    = $clog2(N_FUSRCS);
     localparam int LG_REGSRCS   = $clog2(N_REGSRCS);
 

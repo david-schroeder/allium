@@ -69,6 +69,9 @@ module allium_scheduler
 
 	branch_e     branch_type;
 
+	logic is_move;
+	logic is_load_zero;
+
 	assign opcode = bsd_insn_i[6:0];
 	assign funct3 = bsd_insn_i[14:12];
 	assign funct7 = bsd_insn_i[31:25];
@@ -141,27 +144,94 @@ module allium_scheduler
 	assign alu_is_imm = !opcode[5];
 	assign alu_imm    = imm12;
 
-	////////////////////////////////////
-	//                                //
-	// Configuration management logic //
-	//                                //
-	////////////////////////////////////
+	always_comb begin
+		is_move = '0;
+		is_load_zero = '0;
+		if (insn_group == ARITH && alu_op == ADD) begin
+			if (alu_is_imm) begin
+				is_move = alu_imm == '0;
+				is_load_zero = alu_imm == '0 && rs1 == '0;
+			end else begin
+				is_move = rs2 == '0;
+				is_load_zero = rs1 == '0 && rs2 == '0;
+			end
+		end
+	end
+
+	///////////////////////////////
+	//                           //
+	// Register Allocation Table //
+	//                           //
+	///////////////////////////////
+
+	// Further scheduling logic must manage
+	// the zero register wrt. the RAT
+
+	logic [LG_FUSRCS-1:0] rat [31:0];
+	logic [         31:0] rat_valid;
+
+	logic [LG_FUSRCS-1:0] rs1_allocd_src;
+	logic                 rs1_allocd;
+	logic [LG_FUSRCS-1:0] rs2_allocd_src;
+	logic                 rs2_allocd;
+
+	assign rs1_allocd_src = rat[rs1];
+	assign rs1_allocd     = rat_valid[rs1];
+	assign rs2_allocd_src = rat[rs2];
+	assign rs2_allocd     = rat_valid[rs2];
+
+	//////////////////////
+	//                  //
+	// Scheduling logic //
+	//                  //
+	//////////////////////
+
+	// General scheduling approach:
+	// - Maintain one configuration register containing
+	//   instructions scheduled up to the current point (bsd_pc_i)
+	// - Generate two new configurations:
+	//   - The current configuration extended by necessary allocations
+	//     for the new (decoded) instruction, bsd_insn_i
+	//   - A new configuration containing only the new instruction
+	// - Determine whether the current configuration can accomodate
+	//   the decoded instruction
+	// - If so, add it to the state and accept the next instruction
+	// - Otherwise, emit the current configuration and schedule the
+	//   next instruction into the second generated configuration
 
 	cgra_cfg_t cfg_d, cfg_q;
 	assign config_o = cfg_q;
 
-	logic alu_used_d, alu_used_q;
-	logic imm_used_d, imm_used_q;
-	logic ldst_used_d, ldst_used_q;
-	logic brh_used_d, brh_used_q;
+	logic [ LG_PRESELS:0] presel_used_d , presel_used_q;
+	logic [LG_POSTSELS:0] postsel_used_d, postsel_used_q;
+	logic [    LG_MOVS:0] mov_used_d    , mov_used_q;
+	logic [    LG_ALUS:0] alu_used_d    , alu_used_q;
+	logic [    LG_IMMS:0] imm_used_d    , imm_used_q;
+	logic [   LG_LDSTS:0] ldst_used_d   , ldst_used_q;
+	logic [LG_BRANCHES:0] brh_used_d    , brh_used_q;
+
+	logic postsel_is_available;
+	logic mov_is_available;
+	logic alu_is_available;
+	logic imm_is_available;
+	logic ldst_is_available;
+	logic brh_is_available;
+
+	assign postsel_is_available = postsel_used_q < N_POSTSELS;
+	assign alu_is_available     = alu_used_q < N_ALUS;
+	assign imm_is_available     = imm_used_q < N_IMMS;
+	assign ldst_is_available    = ldst_used_q < N_LDSTS;
+	assign brh_is_available     = brh_used_q < N_BRANCHES;
 
 	always_comb begin
-		cfg_d       = cfg_q;
-		alu_used_d  = alu_used_q;
-		imm_used_d  = imm_used_q;
-		ldst_used_d = ldst_used_q;
-		brh_used_d  = brh_used_q;
-		bsd_ready_o = '1;
+		cfg_d          = cfg_q;
+		presel_used_q  = presel_used_d;
+		postsel_used_q = postsel_used_d;
+		alu_used_d     = alu_used_q;
+		imm_used_d     = imm_used_q;
+		ldst_used_d    = ldst_used_q;
+		brh_used_d     = brh_used_q;
+		bsd_ready_o    = '1;
 	end
 
 	always_ff @(posedge clk_i or negedge rst_ni) begin
