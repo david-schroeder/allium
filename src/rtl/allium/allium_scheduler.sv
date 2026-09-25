@@ -72,6 +72,9 @@ module allium_scheduler
 	logic is_move;
 	logic is_load_zero;
 
+	logic op1_is_reg;
+	logic op2_is_reg;
+
 	assign opcode = bsd_insn_i[6:0];
 	assign funct3 = bsd_insn_i[14:12];
 	assign funct7 = bsd_insn_i[31:25];
@@ -158,14 +161,17 @@ module allium_scheduler
 		end
 	end
 
+	always_comb begin
+		op1_is_reg = insn_group inside {BRANCH, LOAD, STORE, ARITH};
+		op2_is_reg = insn_group inside {BRANCH, STORE};
+		op2_is_reg |= insn_group == ARITH && !alu_is_imm;
+	end
+
 	///////////////////////////////
 	//                           //
 	// Register Allocation Table //
 	//                           //
 	///////////////////////////////
-
-	// Further scheduling logic must manage
-	// the zero register wrt. the RAT
 
 	logic [LG_FUSRCS-1:0] rat [31:0];
 	logic [         31:0] rat_valid;
@@ -175,10 +181,16 @@ module allium_scheduler
 	logic [LG_FUSRCS-1:0] rs2_allocd_src;
 	logic                 rs2_allocd;
 
-	assign rs1_allocd_src = rat[rs1];
-	assign rs1_allocd     = rat_valid[rs1];
-	assign rs2_allocd_src = rat[rs2];
-	assign rs2_allocd     = rat_valid[rs2];
+	logic                 rs1_needs_alloc;
+	logic                 rs2_needs_alloc;
+
+	assign rs1_allocd_src  = rs1 == '0 ? '0 : rat[rs1];
+	assign rs1_allocd      = rs1 == '0 || rat_valid[rs1];
+	assign rs2_allocd_src  = rs2 == '0 ? '0 : rat[rs2];
+	assign rs2_allocd      = rs2 == '0 || rat_valid[rs2];
+
+	assign rs1_needs_alloc = op1_is_reg && !rs1_allocd;
+	assign rs2_needs_alloc = op2_is_reg && !rs2_allocd;
 
 	//////////////////////
 	//                  //
@@ -200,7 +212,55 @@ module allium_scheduler
 	//   next instruction into the second generated configuration
 
 	cgra_cfg_t cfg_d, cfg_q;
+	cgra_cfg_t cfg_extended, cfg_new;
+
 	assign config_o = cfg_q;
+
+	/* New CFG Generation */
+
+	always_comb begin
+		cfg_new = '{default: '0};
+
+		// Preselect allocation
+		case ({op1_is_reg, op2_is_reg})
+			2'b01: cfg_new.presels[0] = rs2;
+			2'b10: cfg_new.presels[0] = rs1;
+			2'b11: begin
+				cfg_new.presels[0] = rs1;
+				cfg_new.presels[1] = rs2;
+			end
+			default: ;
+		endcase
+
+		case (insn_group)
+			IMM: cfg_new.postsels[0] = '{
+				src: SRC_IMM_BASE,
+				dest: rd
+			};
+			LOAD: cfg_new.postsels[0] = '{
+				src: SRC_LDST_BASE,
+				dest: rd
+			};
+			ARITH: begin
+				if (is_load_zero) begin
+					cfg_new.postsels[0] = '{
+						src: SRC_ZERO,
+						dest: rd
+					};
+				end else if (is_move) begin
+					cfg_new.postsels[0] = '{
+						src: SRC_MOVE_BASE,
+						dest: rd
+					};
+				end else cfg_new.postsels[0] = '{
+					src: SRC_ALU_BASE,
+					dest: rd
+				};
+			end
+		endcase
+	end
+
+	/* Extended CFG Generation */
 
 	logic [ LG_PRESELS:0] presel_used_d , presel_used_q;
 	logic [LG_POSTSELS:0] postsel_used_d, postsel_used_q;

@@ -43,11 +43,11 @@ package allium_pkg;
     //////////////////////////////////
 
     // Adjustable parameters
-    localparam int N_PRESELS    = 4;
-    localparam int N_POSTSELS   = 2;
-    localparam int N_IMMS       = 2;
-    localparam int N_ALUS       = 2;
-    localparam int N_MOVS       = 2;
+    localparam int N_PRESELS    = 4; // >= 2
+    localparam int N_POSTSELS   = 2; // >= 1
+    localparam int N_IMMS       = 2; // >= 1
+    localparam int N_ALUS       = 2; // >= 1
+    localparam int N_MOVS       = 2; // >= 1
 
     // Not adjustable yet
     localparam int N_LDSTS      = 1;
